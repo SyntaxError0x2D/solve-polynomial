@@ -167,7 +167,7 @@ def findRoot(p : polynom):
             mv <<= 1
             bnd = CP[indx]+s*mv
 
-        m = bisectSolve(p, (bnd, CP[indx]))
+        m = bisectSolve(p, (bnd, CP[indx]+s*(mv >> 1) ))
         Zs.append(m)
     
     for indx in range(len(CP)-1):
