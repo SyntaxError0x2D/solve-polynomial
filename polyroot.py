@@ -8,7 +8,7 @@ def sqrt(n):
     if a & 1: odd = 1
     a >>= 1 #div by 2 / cuts out odd
     lw = 2**a #lowerbound
-    up = lw* [sqrt2, 2][odd] #syntax shenanigans
+    up = lw* [1, sqrt2][odd] #syntax shenanigans
 
     for _ in range(sqrtLim):
         m = (up+lw)/2
