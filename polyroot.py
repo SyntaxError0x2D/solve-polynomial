@@ -1,4 +1,4 @@
-sqrtLim = 50
+sqrtLim = 500
 sqrt2 = 1.4142135623730950488 
 
 def sqrt(n):
@@ -18,7 +18,7 @@ def sqrt(n):
         else: up = m
     return(m)
 
-loopLim = 20
+loopLim = 1000
 
 def sgn(n):
     if n > 0: return(1)
@@ -52,7 +52,9 @@ class polynom:
             elif c < 0 and i != 0: txt += " - " ; c = str(c)[1:]
             #zero/one case exp
             if i not in (self.order, self.order-1):
-                txt += f"{c}x^{self.order - i}"
+                ord = self.order - i
+                if ord < 10: txt += f"{c}x^{ord}"
+                else: txt += f"{c}x^"+"{"+str(ord)+"}"
             elif i == self.order-1: txt += f"{c}x"
             elif i == self.order: txt += f"{c}"
 
@@ -167,18 +169,18 @@ def findRoot(p : polynom):
             mv <<= 1
             bnd = CP[indx]+s*mv
 
-        m = bisectSolve(p, (bnd, CP[indx]+s*(mv >> 1) ))
+        m = bisectSolve(p, (bnd, CP[indx]))
         Zs.append(m)
     
     for indx in range(len(CP)-1):
         if sgn(Vs[indx]) == sgn(Vs[indx+1]): continue
         m = bisectSolve(p, (CP[indx], CP[indx+1]))
         Zs.append(m)
-    
+
     Zs = sorted(Zs)
     return(Zs)
 
 
-t = polynom((5, 4, -3, 1,0,-4,-1))
+t = polynom((3, 2,1,-100, 3, 4, 0, 1, -3, 6, 0, 0, -5, -1, 3))
 print(t)
 print("Root(s):", findRoot(t))
