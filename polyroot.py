@@ -1,6 +1,6 @@
 sqrtLim = 500
 sqrt2 = 1.4142135623730950488 
-zeroEnough = 10**-31
+zeroEnough = 10**-16
 
 def sqrt(n):
     #approx
@@ -39,8 +39,6 @@ class polynom:
         s = 0
         for i in range(self.order+1):
             s += self[i] * (val**i)
-        
-        if abs(s) < zeroEnough: s = 0
 
         return(s)
 
@@ -112,7 +110,9 @@ def newtonIter(p, g):
 
     fp = ddx(p)
     for _ in range(loopLim):
-        g -= p(g)/fp(g)
+        div = fp(g)
+        if div == 0: g -= 0.01 ; continue #div by zero case
+        g -= p(g)/div
 
     return(g)
 
@@ -183,15 +183,17 @@ def findRoot(p : polynom):
         m = bisectSolve(p, (bnd, CP[indx]))
         Zs.append(m)
     
-    # if p.order == 10: 
-    #     print("CP:", CP)
-    #     print("VS:", [sgn(i) for i in Vs])
+    inIndx = []
 
     for indx in range(len(CP)-1):
         if sgn(Vs[indx]) == sgn(Vs[indx+1]): continue
         m = bisectSolve(p, (CP[indx], CP[indx+1]))
         Zs.append(m)
+        if m: inIndx.append(indx)
 
+    for indx in range(len(CP)-1):
+        if (abs(p(CP[indx])) < zeroEnough) and (indx not in inIndx):
+            Zs.append(CP[indx])
 
     Zs = sorted(Zs)
     return(Zs)
