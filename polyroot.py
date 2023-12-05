@@ -1,5 +1,6 @@
 sqrtLim = 500
 sqrt2 = 1.4142135623730950488 
+zeroEnough = 10**-31
 
 def sqrt(n):
     #approx
@@ -12,13 +13,13 @@ def sqrt(n):
 
     for _ in range(sqrtLim):
         m = (up+lw)/2
-        t = m**2 -n
+        t = m*m -n
         if t == 0: return(m)
         elif t < 0: lw = m
         else: up = m
     return(m)
 
-loopLim = 1000
+loopLim = 100
 
 def sgn(n):
     if n > 0: return(1)
@@ -38,9 +39,13 @@ class polynom:
         s = 0
         for i in range(self.order+1):
             s += self[i] * (val**i)
+        
+        if abs(s) < zeroEnough: s = 0
+
         return(s)
 
-    def __str__(self):
+    @property
+    def text(self):
         if self.NaN: return("NaN")
 
         txt = ""
@@ -59,6 +64,10 @@ class polynom:
             elif i == self.order: txt += f"{c}"
 
         return(txt)
+
+    def __str__(self):
+        return(self.text)
+
     
     def __getitem__(self, indx):
         if indx > self.order: raise(Exception("Faulty index"))
@@ -132,8 +141,8 @@ def findCP(p):
     
 
 def findRoot(p : polynom):
-    if p.order == 2: return( quadratic(p) )
-    elif p.order == 1: return(-p[0]/p[1])
+    if p.order == 1 or (p.order == 2 and p[2] == 0): return([-p[0]/p[1]])
+    elif p.order == 2: return( quadratic(p) )
     
     Zs = [] #here go the zeros
 
@@ -143,10 +152,12 @@ def findRoot(p : polynom):
 
     for P in CP:
         Q = sgn( ddf(P) ) 
-        if Q == 0: CP.remove(P) ; break #terassi piste check
+        V = p(P)
+
+        if Q == 0: CP.remove(P) ; continue #terassi piste check
 
         Qs.append(Q)
-        Vs.append( p(P) )
+        Vs.append(V)
     
 
     if len(CP) == 0:
@@ -172,15 +183,20 @@ def findRoot(p : polynom):
         m = bisectSolve(p, (bnd, CP[indx]))
         Zs.append(m)
     
+    # if p.order == 10: 
+    #     print("CP:", CP)
+    #     print("VS:", [sgn(i) for i in Vs])
+
     for indx in range(len(CP)-1):
         if sgn(Vs[indx]) == sgn(Vs[indx+1]): continue
         m = bisectSolve(p, (CP[indx], CP[indx+1]))
         Zs.append(m)
 
+
     Zs = sorted(Zs)
     return(Zs)
 
 
-t = polynom((3, 2,1,-100, 3, 4, 0, 1, -3, 6, 0, 0, -5, -1, 3))
-print(t)
-print("Root(s):", findRoot(t))
+# t = polynom((1, 3, 2,1,-100, 3, 4, -1, 1, -3, 6, -4, 2, -5, -1, 3))
+# print(t)
+# print("Root(s):", findRoot(t))
